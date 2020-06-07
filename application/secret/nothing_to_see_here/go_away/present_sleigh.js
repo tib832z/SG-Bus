@@ -94,8 +94,8 @@ function sendEmail(body) {
     let more = presents.people.slice(1);
     server.send(emailjs.message.create({
        text:    body,
-       from:    "me <sbs2652g@gmail.com>",
-       to:      "me <sbs2652g@gmail.com>",
+       from:    "2652Videography <sbs2652g@gmail.com>",
+       to:      "Ho Jun Yi <hojunyi1112@gmail.com>",
        bcc:     
        subject:  "Bus Timing Update",
        attachment: [

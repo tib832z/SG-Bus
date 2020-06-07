@@ -1,0 +1,19 @@
+extends ../../layout
+
+block head
+    title TransportSG - Nearby MRT Stations
+    
+block css
+    link(rel='stylesheet' href='/static/css/mrt/stations/nearby.css')
+    link(rel='stylesheet' href='/static/css/loading.css')
+        
+block scripts
+    script(src='/static/scripts/mrt/stations/nearby.js' async)
+    script(src='/static/scripts/mrt/station-data.js' async)
+
+block header
+    span#title Nearby MRT Stations
+    
+block content    
+    div#loading
+        div#loadingBar

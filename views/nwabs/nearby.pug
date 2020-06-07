@@ -1,0 +1,24 @@
+extends ../layout.pug
+
+block head
+    title TransportSG - Nearby NWABs
+    
+block css
+    link(rel='stylesheet' href='/static/css/bus/timings.css')
+    link(rel='stylesheet' href='/static/css/bus/timings-list.css')
+    link(rel='stylesheet' href='/static/css/loading.css')
+    style.
+        a#home {margin-left: auto !important;}
+        div#serviceSummary span {font-size: calc(1.5vw + 1.5vh);}
+
+block scripts
+    script(src='/static/scripts/bus/stops/nearby.js' async)
+    script(src='/static/scripts/unfolding-busstop.js' async)
+
+block header
+    img#page-icon(src='/static/images/bus-stop.svg')
+    span#title Nearby NWABs
+
+block content
+    div#loading
+        div#loadingBar

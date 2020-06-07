@@ -1,0 +1,38 @@
+extends ../../layout.pug
+
+block head
+    title=`TransportSG - MRT Timings: ${stationName}`
+    
+block css
+    link(rel='stylesheet' href='/static/css/mrt/timings-result.css')
+        
+block header
+    -let abbvLine = lineName.split(' ').map(p=>p.slice(0, 1)).join('').toLowerCase()
+    - if (abbvLine == 'cl') abbvLine = 'ccl'
+    span.header=`${stationNumber || ''} `
+        span(class='header header-' + abbvLine)=stationName
+
+block content
+    
+    if invalidLine
+        div.invalidLine
+            span Support for this line isn't here... yet
+            span(style='display:block;height:calc(1vw+1vh);')
+            span(onclick='history.back();').back Go back
+    else
+        
+        for lineName in Object.keys(timings)
+            - let fullLineName = Object.keys(lineAbbreviations)[Object.values(lineAbbreviations).indexOf(lineName)];
+            - let destinationNames = Object.keys(timings[lineName]);
+            for destinationName in destinationNames
+                - let arrivalTimes = timings[lineName][destinationName];
+                div.trainGroup
+                    div(class='trainLineContainer ' + lineName.toLowerCase())
+                        span=lineName
+                    a.destination(href=`/timings/mrt/${fullLineName}/${destinationName}`)
+                        span Towards
+                        span=destinationName
+                    div.timings
+                        for timing in arrivalTimes
+                            div.trainArrival
+                                span=(timing == 1) ? 'Arr' : timing

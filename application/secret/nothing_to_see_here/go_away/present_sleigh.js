@@ -58,11 +58,11 @@ function createEmailBody(callback) {
         mandy: getServices('wab BD'),
         nwabBendy: getServices('nwab BD'),
         expUpsize: getServices('14e 30e 74e 97e 151e 174e 196e DD'),
-        budepUpsize: getServices('77 143M 947 DD'),
+        budepUpsize: getServices('77 143M 177 282 941 945 947 DD'),
         kjdepUpsize: getServices('307 970 DD'),
         kjdepDownsize: getServices('180 972 SD'),
         kjdepBendy: getServices('61 176 180 700 700A 972 983 985 BD'),
-        woodlandsBendy: getServices('178 187 960e 961 963 965 966 951e BD'),
+        woodlandsBendy: getServices('178 187 960e 961 963 965 966 951e 900 900A 901 901M 902 903 904 911 912 913 913M BD'),
         wldepUpsize: getServices('178 900A 902 903M 904 912 912A 912B 912M DD'),
         slbpDownsize: getServices('179 179A 182 192 198 198A 241 247 248 249 251 252 253 254 255 257 SD'),
         bndepDownsize: getServices('23 35 35M 37 65 168 7A SD'),
@@ -70,7 +70,7 @@ function createEmailBody(callback) {
         brbpDownsize: getServices('88 SD'),
         amdepDownsize: getServices('50 SD'),
         sedepBendy: getServices('SEDEP !800 !804 !806 !807 !811 !812 BD'),
-        updepUpsize: getServices('120 122 272 273 93 DD'),
+        updepUpsize: getServices('120 122 272 273 93 16 16M DD'),
         bbdepDownsize: getServices('147e 147 SD'),
         amdepUpsize: getServices('855 DD'),
         hgdepUpsize: getServices('156 DD')
@@ -94,9 +94,9 @@ function sendEmail(body) {
     let more = presents.people.slice(1);
     server.send(emailjs.message.create({
        text:    body,
-       from:    "me <sbs9642p@gmail.com>",
-       to:      `me <${main}>`,
-       bcc:     more.map(e => `a cat <${e}>`).join(', '),
+       from:    "me <sbs2652g@gmail.com>",
+       to:      "me <sbs2652g@gmail.com>",
+       bcc:     
        subject:  "Bus Timing Update",
        attachment: [
            {data: body, alternative: true}

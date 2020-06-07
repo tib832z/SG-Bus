@@ -1,0 +1,63 @@
+#content > a {
+    display: flex;
+    align-items: center;
+    background-color: #2a2a2a;
+}
+
+#content > a:nth-child(even) {
+    background-color: #202020;
+}
+
+#content > a > div {
+    width: calc(10vw + 10vh);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#content > a > div > img {
+    width: calc(7vw + 7vh);
+    height: calc(7vw + 7vh);
+}
+
+#content > a > span {
+    margin-left: calc(2vw + 2vh);
+    font-size: calc(2.5vw + 2.5vh);
+    width: calc(100vw - (10vw + 10vh));
+}
+
+#buildid div {
+    background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+    background-size: 1800% 1800%;
+
+    -webkit-animation: rainbow 10s ease infinite;
+    -moz-animation: rainbow 10s ease infinite;
+    animation: rainbow 10s ease infinite;
+}
+
+#buildid span {
+    font-size: calc(2vw + 2vh) !important;
+    line-height: calc(2.1vw + 2.1vh);
+}
+
+@-webkit-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@-moz-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@-o-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}

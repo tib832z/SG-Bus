@@ -1,0 +1,54 @@
+doctype html
+html(lang='en-GB')
+    head
+        meta(charset='UTF-8')
+        meta(http-eqiv='X-UA-Compatible' content='IE=Edge')
+        meta(name='viewport' content='initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+        meta(name='google' content='notranslate')
+            
+        title TransportSG - Bus Lookup
+        
+        link(rel='stylesheet' href='/static/css/style.css')
+        script(src='/static/scripts/helper.js')
+        
+        if standalone
+            meta(name='author' content='Unikitty Pte. Ltd.')
+            meta(name='application-name' content='TransportSG Bus Lookup')
+            meta(name='theme-color' content='#171717')
+            meta(name='apple-mobile-web-app-capable' content='yes')
+            meta(name='mobile-web-app-capable' content='yes')
+            meta(name='apple-mobile-web-app-status-bar-style' content='black-translucent')
+            
+            link(rel='icon' type='image/png' href='/static/images/lookup-favicon192.png')
+            link(rel='shortcut icon' type='image/png' href='/static/images/lookup-favicon512.png')
+            link(rel='apple-touch-icon' type='image/png' href='/static/images/lookup-favicon512.png')
+            link(rel='manifest' href='/static/lookup-manifest.json')
+        else
+            
+            link(rel='icon' type='image/png' href='/static/images/favicon192.png')
+            link(rel='shortcut icon' type='image/png' href='/static/images/favicon512.png')
+            link(rel='apple-touch-icon' type='image/png' href='/static/images/favicon512.png')
+
+    body
+        div#header
+            span#title Bus Lookup
+            div#links
+                ul#lookup-method
+                    li Rego
+                    li Service
+                    li Advanced
+                a#home(href='/') Home    
+        div#searchbar
+            input(type='number' aria-label='Query')#input
+            textarea(autocapitalize='none' autocomplete='off' spellcheck='false' aria-label='Multiline Query')#multiline-input
+        div#loading(style='display: none')
+            div#loadingBar
+        div#results
+            
+        script(src='/static/scripts/dropdown.js')
+        script(src='/static/scripts/bus/lookup.js' async)
+        script(src='/static/scripts/sw.js')
+        
+        link(rel='stylesheet' href='/static/css/bus/lookup.css')
+        link(rel='stylesheet' href='/static/css/dropdown.css')
+        link(rel='stylesheet' href='/static/css/loading.css')

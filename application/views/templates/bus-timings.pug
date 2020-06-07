@@ -1,0 +1,177 @@
+- function hasArrived(timing) {return +new Date() - +new Date(timing) > 0;}
+- function getTimingsDifference(a, b) {let d = new Date(Math.abs(a - b));return {minutes: d.getUTCMinutes() + d.getUTCHours() * 60, seconds: d.getUTCSeconds()}};
+
+if busTimings.length == 0
+    div.error
+        span.errorMessage No bus services at this bus stop currently are in operation
+
+-
+    function getFrequencySpan() {
+        let now = new Date();
+        let hours = (now.getUTCHours() + 8) % 24;
+        let minutes = now.getUTCMinutes();
+
+        if (hours <= 8) return 'morning';
+        if (hours === 8 && minutes <= 30) return 'morning';
+        
+        if (hours < 17) return 'afternoon';
+        if (hours <= 19) return 'evening';
+        else return 'night';
+    }
+    
+    function getDayOfWeek() {
+        let now = new Date();
+        let day = now.getDay();
+        
+        if (day === 0) return 'sunday';
+        if (day <= 5) return 'weekday';
+        else return 'saturday';
+    }
+    
+    function toDate(time) {
+        let hours = time.slice(0, 2) * 1;
+        let minutes = time.slice(2);
+        let offset = 0;
+        
+        if (hours <= 4) offset = 24 * 60 * 60 * 1000;
+        
+        let today = Math.round(+new Date() / 86400000) * 86400000;
+            
+        offset -= 8 * 60 * 60 * 1000;
+        
+        return new Date(today + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + offset);
+    }
+
+    function predict(timings, serviceData) {
+        try {
+            timings = timings.filter((e, i, a) => a.map(x=>+new Date(x.arrivalTime)).indexOf(+new Date(e.arrivalTime)) === i);
+            if (timings.length === 4) return timings;
+            
+            let currentHeadwayLimits = serviceData.frequency[getFrequencySpan()];
+            let minHeadway = currentHeadwayLimits.min;
+            let maxHeadway = currentHeadwayLimits.max;
+            if (minHeadway === '-' && maxHeadway === '-') return timings;
+            
+            minHeadway *= 1;
+            maxHeadway = maxHeadway * 1 || minHeadway;
+            
+            let avgHeadway = minHeadway + maxHeadway;
+            avgHeadway /= 2;
+            
+            let busStopInfo = serviceData.stops.filter(busStop => busStop.busStopCode == currentBusStopCode)[0];
+            if (!busStopInfo) return timings;
+            
+            let firstBus = toDate(busStopInfo.firstBus[getDayOfWeek()]);
+            let lastBus = toDate(busStopInfo.lastBus[getDayOfWeek()]);
+            
+            let times = [+new Date()].concat(timings.map(time => +new Date(time.arrivalTime)));
+            let intervals = times.concat(+new Date()).map((current, i, a) => {
+                if (i === 0) return -1;
+                let prev = a[i - 1];
+            
+                return Math.floor((current - prev) / (1000 * 60));
+            }).filter(e => e !== -1);
+            
+            let final = timings;
+            
+            let predictions = {};
+            
+            intervals.forEach((interval, i) => {
+                if (interval > (maxHeadway + 5)) {
+                    let previousArrival = timings[i + 1] ? timings[i + 1].arrivalTime : timings[i].arrivalTime;
+                    previousArrival = new Date(previousArrival);
+                    
+                    let predictedArrival = new Date(+previousArrival - avgHeadway * 60 * 1000);
+                    
+                    predictedArrival = new Date(Math.round(+predictedArrival / 60000) * 60000);
+                    
+                    if (predictedArrival < firstBus || predictedArrival > lastBus) return;
+                    
+                    predictions[i] = {
+                        arrivalTime: predictedArrival,
+                        isWAB: -1,
+                        load: 3,
+                        busType: 0
+                    } 
+                }
+            });
+            
+            Object.keys(predictions).reverse().forEach((insertionIndex, i) => {
+                if (final.length + i > 4) return;
+            
+                let prediction = predictions[insertionIndex];
+                final.push(prediction);
+            });
+            
+            final = final.sort((a, b) => new Date(a.arrivalTime) - new Date(b.arrivalTime));
+            
+            
+            let predictionsRemaining = 4 - final.length;
+            for (let i = 0; i < predictionsRemaining; i++) {
+                let predictedArrival = new Date(+new Date(final[final.length - 1].arrivalTime) + maxHeadway * 60 * 1000);
+                
+                predictedArrival = new Date(Math.round(+predictedArrival / 60000) * 60000);
+                
+                if (predictedArrival < firstBus || predictedArrival > lastBus) continue;
+                
+                final.push({
+                    arrivalTime: predictedArrival,
+                    isWAB: -1,
+                    load: 4,
+                    busType: 0
+                });
+            }
+            
+            final = final.sort((a, b) => new Date(a.arrivalTime) - new Date(b.arrivalTime));
+            
+            return final;
+        } catch (e) {
+            console.error(serviceData.fullService);
+            console.error(e);
+            return timings;
+        }
+    }
+
+for bus in busTimings
+    -
+        let {timings} = bus;
+        let destination = bus.destination;
+        let serviceData;
+        if (bus.service === '307' && destination === '44531') {
+            serviceData = JSON.parse(JSON.stringify(services[307][0]));
+            serviceData.variant = 'T';
+        } else
+            serviceData = services[bus.service].filter(svc => svc.interchanges[1] === destination)[0];
+            
+        if (!serviceData) {
+            serviceData = services[bus.service][0];
+            console.error(bus, currentBusStopCode);
+        }
+    div.busService
+        a(href=`/bus/${serviceData.fullService}/${serviceData.routeDirection}` class='busServiceNumber ' + serviceData.operator.toLowerCase())
+            span=serviceData.serviceNumber
+            if serviceData.variant
+                span=serviceData.variant
+        a.destination(href=`/timings/${destinations[bus.destination].busStopCode}`)
+            span Towards
+            span=destinations[bus.destination].busStopName
+        div.timings
+            
+            - let arrivals;
+            if doNotPredict
+                - arrivals = timings;
+            else
+                
+                - arrivals = predict(timings, serviceData);
+            
+            for arrival in arrivals
+                - let ttl = getTimingsDifference(new Date(), new Date(arrival.arrivalTime))
+                div(class='bus-arrival load-' + (arrival.load * 1 + 1) arrival=arrival.arrivalTime)
+                    span(class=hasArrived(arrival.arrivalTime) ? 'bus-arr' : '')=hasArrived(arrival.arrivalTime) ? 'Arr' : ttl.minutes
+                    span=hasArrived(arrival.arrivalTime) ? '' : ttl.seconds
+                    span=['', 'SD', 'DD', 'BD'][arrival.busType]
+                    if arrival.isWAB !== -1
+                        if arrival.isWAB
+                            img(src='/static/images/wheelchair.svg' alt='Wheelchair Accessible')
+                        else
+                            img(src='/static/images/non-wheelchair.svg' alt='Non-Wheelchair Accessible')

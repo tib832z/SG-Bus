@@ -1,0 +1,34 @@
+extends ../layout
+
+block head
+    title TransportSG - MRT Timings
+    
+block css
+    link(rel='stylesheet' href='/static/css/mrt/timings.css')
+    link(rel='stylesheet' href='/static/css/dropdown.css')
+        
+block scripts
+    script(src='/static/scripts/dropdown.js')
+    script(src='/static/scripts/mrt/timings.js' async)
+    script(src='/static/scripts/mrt/station-data.js' async)
+
+block header
+    span#title MRT Timings
+    
+block content
+    div#container
+        div.part
+            span Select an MRT line
+            ul#lineSelector
+                li North South Line
+                li East West Line
+                li Circle Line
+                li Circle Line Extension
+                li Changi Airport Branch Line
+        div.part
+            span Select an MRT Station
+            div#stationSelectorStub.selectorButton
+                span Select an MRT line first
+            ul(style='display: none')#stationSelector
+        div
+            button Get Timings

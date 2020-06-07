@@ -1,0 +1,80 @@
+extends ../layout
+
+block head
+    title TransportSG - MRT Disruptions
+    
+block css
+    link(rel='stylesheet' href='/static/css/mrt/disruptions.css')
+        
+block scripts
+
+block header
+    span#title MRT Disruptions
+    
+block content
+    -
+        let eclos = MRTDisruptions.filter(e=>e.isScheduled).map(disruption => {
+            disruption.stations = disruption.stations.sort((a, b) => a.stationNumber.match(/(\d+)/)[1] - b.stationNumber.match(/(\d+)/)[1]);
+            return disruption;
+        });
+        let disruptions = MRTDisruptions.filter(e=>!e.isScheduled).sort((a,b)=>b.since-a.since).map(disruption => {
+            if (disruption.response.stations)
+                disruption.response.stations = disruption.response.stations.sort((a, b) => a.stationNumber.match(/(\d+)/)[1] - b.stationNumber.match(/(\d+)/)[1]);
+            return disruption;
+        });
+        
+    for eclo in eclos
+        - let {line, stations, replacementShuttle} = eclo;
+        - let fullLineName = mrtLineAbbreviations[line];
+        div.mrtDisruptionContainer
+            div.lineName
+                span=fullLineName
+            div.disruptionInfo
+                div.lineType(class=line.toLowerCase())
+                    if fullLineName.includes('LRT')
+                        span LRT
+                    else
+                        span MRT
+                        
+                div.disruptionDetails
+                    span.disruptionSeverity Scheduled Works
+                    span=stations[0].stationName + ' -'
+                    span=stations.reverse()[0].stationName
+                div.measures
+                    if replacementShuttle.length
+                        img(src='/static/images/free-bridging-bus-icon.svg')
+                        for line in replacementShuttle
+                            span.replacementShuttle=line
+                        
+        
+    for disruption in disruptions
+        - let {disruptionType} = disruption.disruptionType;
+        - let {line, response} = disruption;
+        - let fullLineName = mrtLineAbbreviations[line];
+        div.mrtDisruptionContainer
+            div.lineName
+                span=fullLineName
+            div.disruptionInfo
+                div.lineType(class=line.toLowerCase())
+                    if fullLineName.includes('LRT')
+                        span LRT
+                    else
+                        span MRT
+                div.disruptionDetails
+                    if disruptionType === 'DELAYED_SERVICE'
+                        if disruption.disruptionType.disruptionTime
+                            span.disruptionSeverity='Delayed ' + disruption.disruptionType.disruptionTime + ' min'
+                        else
+                            
+                            span.disruptionSeverity Service Delayed
+                    else
+                        span.disruptionSeverity No Service
+                    if response !== 'NO_RESPONSE'
+                        span=response.stations[0].stationName + ' -'
+                        span=response.stations.reverse()[0].stationName
+                if response !== 'NO_RESPONSE'
+                    div.measures
+                        if response.fpbStations.length
+                            img(src='/static/images/free-public-bus-icon.svg')
+                        if response.fbbStations.length
+                            img(src='/static/images/free-bridging-bus-icon.svg')

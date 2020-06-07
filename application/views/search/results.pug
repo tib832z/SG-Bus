@@ -1,0 +1,51 @@
+//-future idea - show current freq on right
+-
+    let lineAbbreviations = {
+      "North South Line": "nsl",
+      "East West Line": "ewl",
+      "Changi Airport Branch Line": "cgl",
+      "North East Line": "nel",
+      "Circle Line": "ccl",
+      "Circle Line Extension": "cel",
+      "Downtown Line": "dtl",
+      "Bukit Panjang LRT": "bpl",
+      "Sengkang LRT East Loop": "sel",
+      "Sengkang LRT West Loop": "swl",
+      "Punggol LRT East Loop": "pel",
+      "Punggol LRT West Loop": "pwl"
+    }
+    
+    
+for station in mrtStations
+    - let {lineName} = station, stationData = station.station;
+    a(href=`/timings/mrt/${lineName}/${stationData.stationName}`).mrtStation.result
+        div.leftContainer
+            img(src='/static/images/mrt-icon.svg')
+        div.result-details
+            span=lineName
+            div.stationNameInfo
+                span(class=`station-colouring ${lineAbbreviations[lineName]}`)=stationData.stationNumber
+                span.stationName=' ' + stationData.stationName
+
+for service in busServices
+    a(href=`/bus/${service.fullService}`).busService.result
+        if !['SMRT', 'SBST', 'TTS', 'GAS'].includes(service.operator)
+            - service.operator = 'other';
+            
+        div(class='leftContainer ' + service.operator.toLowerCase())
+            span.serviceNumber=service.serviceNumber
+            span.serviceVariant=service.variant
+        div.result-details
+            span=service.routeType.split(' ').map(word=>word.slice(0,1).toUpperCase() + word.slice(1).toLowerCase()).join(' ') + ' Service ' + service.fullService
+            if service.interchangeNames[0]
+                span=service.interchangeNames[0].busStopName + ' - ' + (service.interchangeNames[1].busStopName || service.interchangeNames[1])
+            else
+                span=service.interchanges[0] + ' - ' + service.interchanges[1]
+
+for busStop in busStops
+    a(href=`/timings/${busStop.busStopCode}`).busStop.result
+        div.leftContainer
+            img(src='/static/images/bus-stop.svg')
+        div.result-details
+            span=busStop.roadName
+            span=busStop.busStopCode + ' ' + busStop.busStopName

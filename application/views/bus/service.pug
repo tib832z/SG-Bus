@@ -1,0 +1,173 @@
+extends ../layout.pug
+
+block head
+    title=`TransportSG - Bus Service ${service.fullService}`
+    
+block css
+    link(rel='stylesheet' href='/static/css/bus/service.css')
+    link(rel='stylesheet' href='/static/css/dropdown.css')
+
+block scripts
+    script(src='/static/scripts/bookmark-helper.js' async)
+    script(src='/static/scripts/bus/service.js' async)
+    - let busStops = JSON.stringify(service.stops);
+    - let routeType = service.routeType;
+    
+    script window.busStops = JSON.parse(`!{busStops}`); window.svcType = "#{routeType}";
+
+block header
+    img#page-icon(src='/static/images/magnifying-glass.svg')
+    span#title='Bus Service ' + service.fullService
+
+block content
+    - var busTypes = ['', 'SD', 'DD', 'BD']
+    - let url = '';
+    
+    if directionCount === 2
+        - url = `/bus/${service.fullService}/${[2,1][service.routeDirection-1]}`
+    
+    if !['SMRT', 'SBST', 'TTS', 'GAS'].includes(service.operator)
+        - service.operator = 'other';
+    
+    div#svcSummary
+        a(class='svc-' + service.operator.toLowerCase() href=url)#svcNumber
+            span#routeType=service.routeType
+            span#svcText=service.fullService
+        div#terminals
+            if service.interchangeNames[0]
+                a(href=`/timings/${service.interchangeNames[0].busStopCode}`).coloured-row
+                    span=service.interchangeNames[0].busStopName.toUpperCase()
+                if service.interchangeNames[1].busStopCode
+                    - url = `/timings/${service.interchangeNames[1].busStopCode}`
+                a(href=url).coloured-row
+                    span=(service.interchangeNames[1].busStopName || service.interchangeNames[1]).toUpperCase()
+            else
+                a.coloured-row
+                    span=service.interchanges[0]
+                a.coloured-row
+                    span=service.interchanges[1]
+    div#serviceTimings
+        div#keyTimings
+            div.table-header.table-data.spacing1
+                span Days
+                span First Bus
+                span Last Bus
+            div.coloured-row.table-data.spacing1
+                span Weekdays
+                span=service.stops[0].firstBus.weekday
+                span=service.stops[0].lastBus.weekday
+            div.coloured-row.table-data.spacing1
+                span Saturday
+                span=service.stops[0].firstBus.saturday
+                span=service.stops[0].lastBus.saturday
+            div.coloured-row.table-data.spacing1
+                span Sundays / PH
+                span=service.stops[0].firstBus.sunday
+                span=service.stops[0].lastBus.sunday
+            div.coloured-row.table-data
+        div#frequency
+            div.table-header.table-data.spacing1
+                span Time Of Day
+                span Min Frequency
+                span Max Frequency
+            div.coloured-row.table-data.spacing1
+                div.freqTime
+                    span 0530 - 0830
+                    span Morning Peak
+                span=service.frequency.morning.min || '-'
+                span=service.frequency.morning.max || '-'
+            div.coloured-row.table-data.spacing1
+                div.freqTime
+                    span 0831 - 1659
+                    span Morning / Afternoon
+                span=service.frequency.afternoon.min || '-'
+                span=service.frequency.afternoon.max || '-'
+            div.coloured-row.table-data.spacing1
+                div.freqTime
+                    span 1700 - 1900
+                    span Evening Peak
+                span=service.frequency.evening.min || '-'
+                span=service.frequency.evening.max || '-'
+            div.coloured-row.table-data.spacing1
+                div.freqTime
+                    span 1900 - 2330
+                    span Night
+                span=service.frequency.night.min || '-'
+                span=service.frequency.night.max || '-'
+    div#busStops
+        div.table-header.table-data.spacing2
+            span Distance
+            span Bus Stop Code
+            span Bus Stop
+        - let stopNumber = 0;
+        - let destination = service.interchanges[1];
+        mixin timings(serviceTimings)
+            for timing in serviceTimings.timings.slice(0, 2)
+                div(class='busArrIndicator load-' + (timing.load*1 + 1))
+                    span=getTimingsDifference(new Date(), new Date(timing.arrivalTime)).minutes || 'Arr'
+                    div.busInfo
+                        span=busTypes[timing.busType]
+                        if timing.isWAB
+                            img(src='/static/images/wheelchair.svg')
+                        else
+                            img(src='/static/images/non-wheelchair.svg')
+        
+        - let checkDest = service.interchanges[0] !== service.interchanges[1];
+        
+        for busStop in service.stops
+            div.coloured-row
+                div(onclick=`toggle("${busStop.stopNumber}")`).table-data.spacing2
+                    span=busStop.distance
+                    span=busStop.busStopCode
+                    div
+                        div.busStop
+                            span=busStop.roadName
+                            span=busStop.busStopName
+                        div.busArr
+                            if timings[busStop.busStopCode]
+                                for serviceTimings in timings[busStop.busStopCode]
+                                    if checkDest
+                                        if serviceTimings.service === service.fullService && serviceTimings.destination === destination
+                                            +timings(serviceTimings)
+                                    else if serviceTimings.service === service.fullService
+                                        +timings(serviceTimings)
+                                    
+                div(bus-stop=busStop.busStopCode stop-number=busStop.stopNumber style='display: none;').service-info
+                    if busStop.busStopCode !== '-'
+                        a(href=`/timings/${busStop.busStopCode}`)
+                            img(src='/static/images/service/timer.svg')
+                            span Arrival Times
+                    div(onclick=`calcFarePopup(${++stopNumber})`)
+                        img(src='/static/images/service/dollar.svg')
+                        span Calculate Fare
+                    div(onclick=`toggleBookmark("${busStop.busStopCode}")` bus-stop-code=busStop.busStopCode).bookmark
+                        img(src='/static/images/bookmark/empty.svg')
+                        span Bookmark
+                    if busStop.pos
+                        div(onclick=`window.open("https://www.google.com/maps?layer=c&cbll=${busStop.pos.lat},${busStop.pos.long}")`)
+                            img(src='/static/images/service/street-view.svg')
+                            span Street View
+                    else
+                        div(onclick=`checkStreetView("${busStop.busStopCode}")`)
+                            img(src='/static/images/service/street-view.svg')
+                            span Street View
+
+    div#shade
+    div#fare-box-container
+        div#fare-box
+            span Select a fare type
+            ul#fare-type
+                li Student
+                li Senior
+                li Adult
+            span Select a bus stop
+            ul#start-bus-stop
+                for busStop in service.stops
+                    li(distance=busStop.distance)=busStop.busStopName
+                    
+            span Select another bus stop
+            ul#dest-bus-stop
+                for busStop in service.stops
+                    li(distance=busStop.distance)=busStop.busStopName
+            p
+            span#fare-output Your fare is: 

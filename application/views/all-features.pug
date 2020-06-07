@@ -1,0 +1,64 @@
+extends layout
+
+block head
+    title TransportSG - All Features
+
+block css
+    link(rel='stylesheet' href='/static/css/all-features.css')
+
+block header
+    span#title All Features
+
+block content
+    a(href='/bookmarks')
+        div(style='background-color: #fa5757')
+            img(src='/static/images/home/bookmarks.svg' alt='Bookmarks')
+        span Bookmarks
+    a(href='/nearby/bus/stops')
+        div(style='background-color: #ffb250')
+            img(src='/static/images/home/nearby_bus_stops.svg' alt='Nearby Bus Stops')
+        span Nearby Bus Stops
+    a(href='/timings/mrt')
+        div(style='background-color: #fdff78')
+            img(src='/static/images/home/mrt_timings.svg' alt='MRT Timings')
+        span MRT Timings
+    a(href='/search')
+        div(style='background-color: #82eb79')
+            img(src='/static/images/home/general_search.svg' alt='General Search')
+        span General Search
+    a(href='/lookup')
+        div(style='background-color: #79d7eb')
+            img(src='/static/images/home/bus_lookup.svg' alt='Bus Lookup')
+        span Bus Lookup
+    a(href='/nearby/nwabs')
+        div(style='background-color: #7980eb')
+            img(src='/static/images/home/nearby_nwabs.svg' alt='Nearby NWABs')
+        span Nearby NWABs
+    a(href='mailto:sbs9642p@gmail.com')
+        div(style='background-color: #eb79e6')
+            img(src='/static/images/home/contact_me.svg' alt='Suggestions / Bugs')
+        span Suggestions / Bugs
+    a(href='https://eds.transportsg.me')
+        div(style='background-color: #f873af')
+            img(src='/static/images/free-bridging-bus-icon.svg' alt='EDS Simulators')
+        span EDS Simulators
+    a(href='/nearby/mrt/stations')
+        div(style='background-color: #fa5757')
+            img(src='/static/images/lrt-station.svg' alt='Nearby MRT Stations')
+        span Nearby MRT Stations    
+    a(href='https://github.com/TransportSG/TransportSG/wiki/Table-of-Contents')
+        div(style='background-color: #ffb250')
+            img(src='/static/images/home/api-documentation.svg' alt='API Documentation')
+        span API Documentation
+    a
+        div(style='background-color: #fdff78')
+            img(src='/static/images/home/server_stats.svg' alt='Build number')
+        -
+            let now = moment();
+            let diff = moment.preciseDiff(now, startTime);
+            
+        span='Uptime: ' + diff
+    a(href='https://github.com/TransportSG/TransportSG/commit/' + buildNumber)#buildid
+        div
+            img(src='/static/images/home/build.svg' alt='Build number')
+        span='Build ' + buildNumber + ': ' + buildComment

@@ -31,7 +31,7 @@
     "mongodb": "^3.4.0",
     "mongoose": "^5.8.1",
     "node-cache": "^4.2.1",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",

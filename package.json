@@ -43,6 +43,6 @@
   },
   "devDependencies": {
     "@hapi/hawk": "^7.1.2",
-    "hawk": "^7.0.10"
+    "hawk": "^9.0.1"
   }
 }
